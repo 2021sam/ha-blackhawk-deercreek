@@ -1,0 +1,14 @@
+# --- Home Assistant safe defaults ---
+secrets.yaml
+*.key
+*.pem
+.cloud/
+.storage/
+home-assistant_v2.db*
+*.log
+.backups/
+deps/
+__pycache__/
+.typing
+custom_components/*/__pycache__/
+www/.cache/
