@@ -179,27 +179,6 @@
       entity_id: light.man_cave_ceiling_lights
     action: light.turn_off
   mode: restart
-- id: '1762555555293'
-  alias: Atrium PIR → Man Cave Lights (stay on until 5s no motion)
-  description: Turn on with motion; turn off only after PIR is off for 5 seconds.
-  triggers:
-  - trigger: state
-    entity_id: binary_sensor.atrium_pir_occupancy
-    to: 'on'
-  actions:
-  - data:
-      reason: Motion in the atrium
-    action: script.atrium_lights_on_reasoned
-  - wait_for_trigger:
-    - trigger: state
-      entity_id: binary_sensor.atrium_pir_occupancy
-      to: 'off'
-      for:
-        seconds: 5
-  - data:
-      reason: No motion for 5 seconds
-    action: script.atrium_lights_off_reasoned
-  mode: restart
 - id: '1762596176562'
   alias: Atrium PIR → Man Cave Lights (until PIR clears)
   description: ''

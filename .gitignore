@@ -12,3 +12,17 @@ __pycache__/
 .typing
 custom_components/*/__pycache__/
 www/.cache/
+# Runtime / locks
+.ha_run.lock
+*.log
+*.log.*
+
+# Databases
+zigbee.db
+zigbee.db-shm
+zigbee.db-wal
+home-assistant_v2.db*
+*.sqlite*
+
+# TTS cache
+tts/
