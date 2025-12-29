@@ -28,3 +28,11 @@ home-assistant_v2.db*
 tts/
 home-assistant.log*
 .ssh/
+
+# Never commit SSH keys / HA runtime files
+.ssh/
+home-assistant.log*
+home-assistant_v2.db*
+zigbee.db*
+.storage/
+secrets.yaml
