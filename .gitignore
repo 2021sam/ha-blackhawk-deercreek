@@ -27,3 +27,4 @@ home-assistant_v2.db*
 # TTS cache
 tts/
 home-assistant.log*
+.ssh/
