@@ -200,3 +200,378 @@
       reason: No motion for about one minute
     action: script.atrium_lights_off_reasoned
   mode: restart
+- id: '1762636322107'
+  alias: Atrium PIR → Man Cave Lights (until PIR clears)
+  description: Turn on with motion; log reason; turn off after PIR is off for 1 minute.
+  triggers:
+  - entity_id: binary_sensor.atrium_pir_occupancy
+    to: 'on'
+    trigger: state
+  actions:
+  - target:
+      entity_id: light.man_cave_ceiling_lights
+    action: light.turn_on
+  - target:
+      entity_id: input_text.atrium_last_light_reason
+    data:
+      value: Motion in the atrium
+    action: input_text.set_value
+  - wait_for_trigger:
+    - entity_id: binary_sensor.atrium_pir_occupancy
+      to: 'off'
+      for: 00:01:00
+      trigger: state
+  - target:
+      entity_id: light.man_cave_ceiling_lights
+    action: light.turn_off
+  - target:
+      entity_id: input_text.atrium_last_light_reason
+    data:
+      value: No motion for about one minute
+    action: input_text.set_value
+  mode: restart
+- id: '1762637039248'
+  alias: Atrium PIR → Man Cave Lights & Announce
+  description: Turn on with motion; welcome once if lights were off; turn off after
+    PIR is off for 1 minute.
+  triggers:
+  - entity_id: binary_sensor.atrium_pir_occupancy
+    to: 'on'
+    trigger: state
+  actions:
+  - variables:
+      speak_welcome: '{{ is_state(''light.man_cave_ceiling_lights'', ''off'') }}'
+  - target:
+      entity_id: light.man_cave_ceiling_lights
+    action: light.turn_on
+  - data:
+      entity_id: input_text.atrium_last_light_reason
+      value: Motion in the atrium
+    action: input_text.set_value
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ speak_welcome }}'
+      sequence:
+      - target:
+          entity_id: media_player.family_room
+        action: media_player.turn_on
+      - delay: 00:00:01
+      - target:
+          entity_id: media_player.family_room
+        data:
+          volume_level: 0.35
+        action: media_player.volume_set
+      - target:
+          entity_id: tts.google_translate_en_com
+        data:
+          media_player_entity_id: media_player.family_room
+          message: Welcome to the atrium.
+        action: tts.speak
+  - wait_for_trigger:
+    - entity_id: binary_sensor.atrium_pir_occupancy
+      to: 'off'
+      for: 00:01:00
+      trigger: state
+  - target:
+      entity_id: light.man_cave_ceiling_lights
+    action: light.turn_off
+  - data:
+      entity_id: input_text.atrium_last_light_reason
+      value: No motion for about one minute
+    action: input_text.set_value
+  mode: restart
+- id: '1762642658098'
+  alias: Atrium PIR → Man Cave Lights (welcome + chime, until PIR clears)
+  description: Turn on with motion; speak once if lights were off; turn off after
+    PIR is off for 1 minute; play a subtle chime on off.
+  triggers:
+  - entity_id: binary_sensor.atrium_pir_occupancy
+    to: 'on'
+    trigger: state
+  actions:
+  - variables:
+      speak_welcome: '{{ is_state(''light.man_cave_ceiling_lights'', ''off'') }}'
+  - target:
+      entity_id: light.man_cave_ceiling_lights
+    action: light.turn_on
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ speak_welcome }}'
+      sequence:
+      - target:
+          entity_id: media_player.family_room
+        action: media_player.turn_on
+      - delay: 00:00:01
+      - target:
+          entity_id: media_player.family_room
+        data:
+          volume_level: 0.35
+        action: media_player.volume_set
+      - target:
+          entity_id: tts.google_translate_en_com
+        data:
+          media_player_entity_id: media_player.family_room
+          message: Welcome to the atrium.
+        action: tts.speak
+  - wait_for_trigger:
+    - entity_id: binary_sensor.atrium_pir_occupancy
+      to: 'off'
+      for: 00:01:00
+      trigger: state
+  - target:
+      entity_id: light.man_cave_ceiling_lights
+    action: light.turn_off
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ true }}'
+      sequence:
+      - target:
+          entity_id: media_player.family_room
+        action: media_player.turn_on
+      - target:
+          entity_id: media_player.family_room
+        data:
+          volume_level: 0.3
+        action: media_player.volume_set
+      - target:
+          entity_id: media_player.family_room
+        data:
+          media:
+            media_content_id: /local/chimes/off.mp3
+            media_content_type: music
+            metadata: {}
+        action: media_player.play_media
+  mode: restart
+- id: '1762660197691'
+  alias: Atrium PIR → Man Cave Lights (welcome + soundscapes chime, until PIR clears)
+  description: 'Turn on with motion; speak once if lights were off; turn off after
+    PIR is off for 1 minute; play a subtle chime on off.
+
+    '
+  triggers:
+  - entity_id: binary_sensor.atrium_pir_occupancy
+    to: 'on'
+    trigger: state
+  actions:
+  - variables:
+      speak_welcome: '{{ is_state(''light.man_cave_ceiling_lights'', ''off'') }}'
+  - action: light.turn_on
+    target:
+      entity_id: light.man_cave_ceiling_lights
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ speak_welcome }}'
+      sequence:
+      - action: media_player.turn_on
+        target:
+          entity_id: media_player.family_room
+      - delay: 00:00:01
+      - action: media_player.volume_set
+        target:
+          entity_id: media_player.family_room
+        data:
+          volume_level: 0.35
+      - action: tts.speak
+        target:
+          entity_id: tts.google_translate_en_com
+        data:
+          media_player_entity_id: media_player.family_room
+          message: Welcome to the atrium.
+  - wait_for_trigger:
+    - entity_id: binary_sensor.atrium_pir_occupancy
+      to: 'off'
+      for: 00:01:00
+      trigger: state
+  - action: light.turn_off
+    target:
+      entity_id: light.man_cave_ceiling_lights
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ true }}'
+      sequence:
+      - action: media_player.turn_on
+        target:
+          entity_id: media_player.family_room
+      - action: media_player.volume_set
+        target:
+          entity_id: media_player.family_room
+        data:
+          volume_level: 0.3
+      - delay: 00:00:01
+      - action: media_player.play_media
+        target:
+          entity_id: media_player.family_room
+        data:
+          media:
+            media_content_id: media-source://media_source/local/soundscapes/1.wav
+            media_content_type: audio/wav
+            metadata: {}
+  mode: restart
+- id: '1763252120922'
+  alias: Atrium PIR → Power Strip ON/OFF (1 min delay)
+  description: Turn ON power strip when motion detected, OFF 1 min after clear.
+  triggers:
+  - entity_id: binary_sensor.atrium_pir_occupancy
+    to: 'on'
+    trigger: state
+  - entity_id: binary_sensor.atrium_pir_occupancy
+    to: 'off'
+    trigger: state
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.atrium_pir_occupancy
+        state: 'on'
+      sequence:
+      - target:
+          entity_id:
+          - switch.atrium_power_switch_1
+          - switch.atrium_power_switch_2
+          - switch.atrium_power_switch_3
+          - switch.atrium_power_switch_4
+          - switch.atrium_power_switch_5
+        action: switch.turn_on
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.atrium_pir_occupancy
+        state: 'off'
+      sequence:
+      - delay: 00:01:00
+      - condition: state
+        entity_id: binary_sensor.atrium_pir_occupancy
+        state: 'off'
+      - target:
+          entity_id:
+          - switch.atrium_power_switch_1
+          - switch.atrium_power_switch_2
+          - switch.atrium_power_switch_3
+          - switch.atrium_power_switch_4
+          - switch.atrium_power_switch_5
+        action: switch.turn_off
+  mode: restart
+- id: '1763260249243'
+  alias: Atrium PIR → Power Strip ON/OFF (1 min delay, no sun condition)
+  description: Turn ON power strip when motion detected, OFF 1 min after clear.
+  triggers:
+  - entity_id: binary_sensor.atrium_pir_occupancy
+    to: 'on'
+    trigger: state
+  - entity_id: binary_sensor.atrium_pir_occupancy
+    to: 'off'
+    trigger: state
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.atrium_pir_occupancy
+        state: 'on'
+      - condition: state
+        entity_id: sun.sun
+        state: below_horizon
+      sequence:
+      - target:
+          entity_id:
+          - switch.atrium_power_switch_1
+          - switch.atrium_power_switch_2
+          - switch.atrium_power_switch_3
+          - switch.atrium_power_switch_4
+          - switch.atrium_power_switch_5
+        action: switch.turn_on
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.atrium_pir_occupancy
+        state: 'off'
+      sequence:
+      - delay: 00:01:00
+      - condition: state
+        entity_id: binary_sensor.atrium_pir_occupancy
+        state: 'off'
+      - target:
+          entity_id:
+          - switch.atrium_power_switch_1
+          - switch.atrium_power_switch_2
+          - switch.atrium_power_switch_3
+          - switch.atrium_power_switch_4
+          - switch.atrium_power_switch_5
+        action: switch.turn_off
+  mode: restart
+- id: '1763260793427'
+  alias: Atrium PIR → Man Cave Lights (welcome + soundscapes chime, until PIR clears,
+    no sun condition)
+  description: 'Turn on with motion; speak once if lights were off; turn off after
+    PIR is off for 1 minute; play a subtle chime on off.
+
+    '
+  triggers:
+  - entity_id: binary_sensor.atrium_pir_occupancy
+    to: 'on'
+    trigger: state
+  conditions:
+  - condition: state
+    entity_id: sun.sun
+    state: below_horizon
+  actions:
+  - variables:
+      speak_welcome: '{{ is_state(''light.man_cave_ceiling_lights'', ''off'') }}'
+  - action: light.turn_on
+    target:
+      entity_id: light.man_cave_ceiling_lights
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ speak_welcome }}'
+      sequence:
+      - action: media_player.turn_on
+        target:
+          entity_id: media_player.family_room
+      - delay: 00:00:01
+      - action: media_player.volume_set
+        target:
+          entity_id: media_player.family_room
+        data:
+          volume_level: 0.35
+      - action: tts.speak
+        target:
+          entity_id: tts.google_translate_en_com
+        data:
+          media_player_entity_id: media_player.family_room
+          message: Welcome to the atrium.
+  - wait_for_trigger:
+    - entity_id: binary_sensor.atrium_pir_occupancy
+      to: 'off'
+      for: 00:01:00
+      trigger: state
+  - action: light.turn_off
+    target:
+      entity_id: light.man_cave_ceiling_lights
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ true }}'
+      sequence:
+      - action: media_player.turn_on
+        target:
+          entity_id: media_player.family_room
+      - action: media_player.volume_set
+        target:
+          entity_id: media_player.family_room
+        data:
+          volume_level: 0.3
+      - delay: 00:00:01
+      - action: media_player.play_media
+        target:
+          entity_id: media_player.family_room
+        data:
+          media:
+            media_content_id: media-source://media_source/local/soundscapes/1.wav
+            media_content_type: audio/wav
+            metadata: {}
+  mode: restart
